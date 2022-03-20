@@ -13,8 +13,8 @@
 #define VAPORIZER_SET(v) GPIO_OUTPUT_SET(VAPORIZER_PIN, (v))
 #define PUMP_SET(v) GPIO_OUTPUT_SET(PUMP_PIN, (v))
 
-#define ON  1
-#define OFF 0
+#define ON  0
+#define OFF 1
 
 ICACHE_FLASH_ATTR
 void waterlevel_check() {
