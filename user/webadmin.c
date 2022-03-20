@@ -245,6 +245,7 @@ httpd_err_t webadmin_fw_upgrade(struct httpd_session *s) {
         u->len = 0;
         s->reverse = u;
         
+	    ETS_GPIO_INTR_DISABLE();
         /* Erase flash */
         INFO("Erasing flash");
         uint32_t toerase = more;
@@ -354,14 +355,14 @@ httpd_err_t webadmin_params_post(struct httpd_session *s) {
     }
    
     /* parse */
-    err = httpd_form_urlencoded_parse(s, _params_cb, &params);
+    err = httpd_form_urlencoded_parse(s, _params_cb, params);
     if (err) {
         return err;
     }
     if (!params_save(params)) {
         return WEBADMIN_ERR_SAVEPARAMS;
     }
-
+    
     bufflen = os_sprintf(buff, 
             "Params has been saved, Rebooting in 4 seconds."CR);
     err = HTTPD_RESPONSE_TEXT(s, HTTPSTATUS_OK, buff, bufflen);

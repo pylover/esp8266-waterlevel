@@ -7,6 +7,7 @@
 #include "status.h"
 #include "uns.h"
 #include "interrupt.h"
+#include "waterlevel.h"
 
 // SDK
 #include <ets_sys.h>
@@ -58,9 +59,6 @@ void boothello() {
     //status_update(100, 1300, INFINITE, NULL);
     status_stop();
 
-    /* Web UI */
-	webadmin_start(&params);
-
     struct rst_info *r = system_get_rst_info();
     INFO("Boot reason: %d\n", r->reason);
     if (r->reason == REASON_WDT_RST || 
@@ -75,6 +73,13 @@ void boothello() {
                 "depc=0x%08x\n", r->epc1, r->epc2, r->epc3, r->excvaddr, 
                 r->depc); //The address of the last crash is printed, which is used to debug garbled output.
     }
+
+    /* Web UI */
+	webadmin_start(&params);
+    
+    /* Water Level Check */
+    waterlevel_init();
+    waterlevel_check();
 }
 
 

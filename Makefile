@@ -11,8 +11,7 @@
 #     a generated lib/image xxx.a ()
 #
 
-HOST ?= dev.fota
-#HOST ?= h.airmon
+HOST ?= h.vapor
 COMPILE ?= gcc
 SPI_SIZE_MAP := 6
 
@@ -537,3 +536,12 @@ cleanup_map4paramsdio:
 		0x07d000 $(SDK_PATH)/bin/blank.bin \
 		0x07e000 $(SDK_PATH)/bin/blank.bin \
 		0x07f000 $(SDK_PATH)/bin/blank.bin 
+
+.PHONY: fota
+fota: fotamap$(SPI_SIZE_MAP)
+
+.PHONY: user1
+user1: map$(SPI_SIZE_MAP)user1
+
+.PHONY: upload_webui
+upload_webui: upload_map$(SPI_SIZE_MAP)webui
