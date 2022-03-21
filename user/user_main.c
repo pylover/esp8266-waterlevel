@@ -56,8 +56,6 @@ void boothello() {
             params.name
         );
     }
-    //status_update(100, 1300, INFINITE, NULL);
-    status_stop();
 
     struct rst_info *r = system_get_rst_info();
     INFO("Boot reason: %d\n", r->reason);
@@ -79,7 +77,8 @@ void boothello() {
     
     /* Water Level Check */
     waterlevel_init();
-    waterlevel_check();
+
+    status_update(300, 200, 1, waterlevel_check);
 }
 
 

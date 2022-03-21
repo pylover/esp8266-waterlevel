@@ -22,7 +22,7 @@ void waterlevel_check() {
         /* Turn off everything */
         VAPORIZER_SET(OFF);
         PUMP_SET(OFF);
-        return;
+        goto done;
     }
     else {
         VAPORIZER_SET(ON);
@@ -30,56 +30,40 @@ void waterlevel_check() {
     
     if (MAXWET()) {
         PUMP_SET(OFF);
-        return;
+        goto done;
     }
 
     if (!MIDWET()) {
         PUMP_SET(ON);
-        return;
+        goto done;
     }
-}
 
-void gpio_intr(void *arg) {
-	unsigned int gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
-    waterlevel_check();
-    DEBUG("INTR");
-    DEBUG("MAXWET: %d", MAXWET());
-    DEBUG("MIDWET: %d", MIDWET());
-    DEBUG("MINWET: %d", MINWET());
-	// Clear interrupt status
-	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status);
+done:
+    status_update(300, 200, 1, waterlevel_check);
 }
-
 
 
 void ICACHE_FLASH_ATTR
 waterlevel_init() {
-	ETS_GPIO_INTR_DISABLE();
 
 	PIN_PULLUP_EN(MAXWET_MUX);
 	PIN_FUNC_SELECT(MAXWET_MUX, MAXWET_FUNC);
 	GPIO_DIS_OUTPUT(MAXWET_NUM);
-	gpio_pin_intr_state_set(GPIO_ID_PIN(MAXWET_NUM), GPIO_PIN_INTR_ANYEDGE);
 
 	PIN_PULLUP_EN(MIDWET_MUX);
 	PIN_FUNC_SELECT(MIDWET_MUX, MIDWET_FUNC);
 	GPIO_DIS_OUTPUT(MIDWET_NUM);
-	gpio_pin_intr_state_set(GPIO_ID_PIN(MIDWET_NUM), GPIO_PIN_INTR_ANYEDGE);
 
 	PIN_PULLUP_EN(MINWET_MUX);
 	PIN_FUNC_SELECT(MINWET_MUX, MINWET_FUNC);
 	GPIO_DIS_OUTPUT(MINWET_NUM);
-	gpio_pin_intr_state_set(GPIO_ID_PIN(MINWET_NUM), GPIO_PIN_INTR_ANYEDGE);
 
 	PIN_PULLUP_EN(VAPORIZER_MUX);
 	PIN_FUNC_SELECT(VAPORIZER_MUX, VAPORIZER_FUNC);
-	GPIO_OUTPUT_SET(VAPORIZER_NUM, 0);
+	GPIO_OUTPUT_SET(VAPORIZER_NUM, OFF);
 
 	PIN_PULLUP_EN(PUMP_MUX);
 	PIN_FUNC_SELECT(PUMP_MUX, PUMP_FUNC);
-	GPIO_OUTPUT_SET(PUMP_NUM, 0);
-
-	ETS_GPIO_INTR_ATTACH(gpio_intr, NULL);
-	ETS_GPIO_INTR_ENABLE();
+	GPIO_OUTPUT_SET(PUMP_NUM, OFF);
 }
 
